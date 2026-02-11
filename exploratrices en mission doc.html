@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Exploratrices : Choisissez votre héroïne !</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --bg: #f9f9fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, var(--bg) 0%, #e8f4f8 100%);
+            color: #2d3436; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        h1 { 
+            color: var(--primary); 
+            font-size: 2.5em; 
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .intro { 
+            font-size: 1.1em; 
+            margin-bottom: 20px; 
+            color: #636e72; 
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            font-weight: bold;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            color: var(--secondary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #636e72;
+        }
+
+        .container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 25px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .card.reserved { 
+            background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
+            border-color: #b2bec3; 
+            opacity: 0.85; 
+            transform: none;
+        }
+
+        .card.reserved:hover {
+            transform: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .icon {
+            font-size: 2em;
+            min-width: 50px;
+        }
+
+        h3 { 
+            color: var(--primary); 
+            margin: 0; 
+            font-size: 1.4em;
+            line-height: 1.3;
+        }
+
+        .exploit { 
+            font-style: italic; 
+            color: #636e72; 
+            margin-bottom: 20px; 
+            min-height: 50px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-top: auto;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            margin-bottom: 10px; 
+            border: 2px solid #edf2f7; 
+            border-radius: 12px; 
+            outline: none;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--secondary);
+        }
+
+        button { 
+            background: linear-gradient(135deg, var(--secondary) 0%, #00b894 100%);
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 0 4px 10px rgba(0, 206, 201, 0.3);
+        }
+
+        button:hover { 
+            background: linear-gradient(135deg, #00b894 0%, #00a383 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 206, 201, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .tag-reserve {
+            background: linear-gradient(135deg, var(--accent) 0%, #e84393 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 0.9em;
+            box-shadow: 0 3px 8px rgba(253, 121, 168, 0.3);
+        }
+
+        .reset-container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95em;
+            box-shadow: 0 4px 10px rgba(255, 118, 117, 0.3);
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 118, 117, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: auto;
+            box-shadow: none;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(0);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #5f3dc4 0%, #4c2db8 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.4) !important;
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🌍 Mission Exploratrices 🧭</h1>
+        <p class="intro">Sélectionnez une grande voyageuse pour réaliser votre dossier documentaire !</p>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-number" id="total-count">19</span>
+                <span class="stat-label">Exploratrices</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="available-count">19</span>
+                <span class="stat-label">Disponibles</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="reserved-count">0</span>
+                <span class="stat-label">Réservées</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px; text-align: center;">
+            <button onclick="exporterResultats()" class="export-btn" style="background: linear-gradient(135deg, var(--primary) 0%, #5f3dc4 100%); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1em; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); transition: all 0.3s; width: auto;">
+                💾 Exporter le tableau des réservations
+            </button>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterExploratrices('all', this)">Toutes</button>
+            <button class="filter-btn" onclick="filterExploratrices('available', this)">Disponibles</button>
+            <button class="filter-btn" onclick="filterExploratrices('reserved', this)">Réservées</button>
+        </div>
+    </div>
+
+    <div id="liste-exploratrices" class="container">
+        <div class="loading">Chargement des exploratrices...</div>
+    </div>
+
+    <div class="reset-container">
+        <button class="reset-btn" onclick="resetAllReservations()">🔄 Réinitialiser toutes les réservations</button>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'exploratrices-data';
+        
+        const exploratricesDefaut = [
+            {id: 1, nom: "Gudrid Thorbjarnardottir", exploit: "Exploratrice transatlantique médiévale (980–1019)", reserve: false, eleve: "", icon: "⛵"},
+            {id: 2, nom: "Catalina de Erauso", exploit: "La « nonne lieutenant » de l'Amérique espagnole (1600–1620)", reserve: false, eleve: "", icon: "⚔️"},
+            {id: 3, nom: "Jeanne Barret", exploit: "Première femme à faire le tour du monde (1767–1775)", reserve: false, eleve: "", icon: "🌏"},
+            {id: 4, nom: "Louise Seguin", exploit: "À bord de l'expédition de Kerguelen (1772–1773)", reserve: false, eleve: "", icon: "🧭"},
+            {id: 5, nom: "Sacagawea", exploit: "Interprète lors de l'exploration de l'Ouest américain (1804–1806)", reserve: false, eleve: "", icon: "🏔️"},
+            {id: 6, nom: "Esther Stanhope", exploit: "La « Reine Esther » au Moyen-Orient (1810–1839)", reserve: false, eleve: "", icon: "👑"},
+            {id: 7, nom: "Léonie d'Aunet", exploit: "Exploration du Spitzberg (1838–1839)", reserve: false, eleve: "", icon: "❄️"},
+            {id: 8, nom: "Ida Pfeiffer", exploit: "Deux tours du monde en solo (1846–1856)", reserve: false, eleve: "", icon: "🗺️"},
+            {id: 9, nom: "Nellie Bly", exploit: "Le tour du monde en 72 jours (1889–1890)", reserve: false, eleve: "", icon: "⏱️"},
+            {id: 10, nom: "Josephine Diebitsch Peary", exploit: "Expéditions dans l'Inlandsis groenlandais (1891–1892)", reserve: false, eleve: "", icon: "🧊"},
+            {id: 11, nom: "Annie Londonderry", exploit: "Tour du monde à bicyclette (1894–1895)", reserve: false, eleve: "", icon: "🚴"},
+            {id: 12, nom: "Alexandra David-Néel", exploit: "L'exploration interdite du Tibet (1911–1925)", reserve: false, eleve: "", icon: "🏯"},
+            {id: 13, nom: "Gertrude Emerson Sen", exploit: "Experte de l'Asie et géographe (Society of Woman Geographers)", reserve: false, eleve: "", icon: "📚"},
+            {id: 14, nom: "G. Hollister & J. Crane", exploit: "Pionnières de l'exploration sous-marine (1930)", reserve: false, eleve: "", icon: "🤿"},
+            {id: 15, nom: "Adrienne Bolland", exploit: "Premier vol au-dessus de la Cordillère des Andes (1921)", reserve: false, eleve: "", icon: "✈️"},
+            {id: 16, nom: "Amelia Earhart", exploit: "Traversées de l'Atlantique et du Pacifique (1935–1937)", reserve: false, eleve: "", icon: "🛩️"},
+            {id: 17, nom: "Louise Boyd", exploit: "Première femme à survoler le pôle Nord (1955)", reserve: false, eleve: "", icon: "🧊"},
+            {id: 18, nom: "Valentina Terechkova", exploit: "Première femme dans l'espace (1963)", reserve: false, eleve: "", icon: "🚀"},
+            {id: 19, nom: "K. Chojnowska-Liskiewicz", exploit: "Tour du monde à la voile en solitaire (1978)", reserve: false, eleve: "", icon: "⛵"}
+        ];
+
+        let exploratrices = [];
+        let currentFilter = 'all';
+        const container = document.getElementById('liste-exploratrices');
+
+        // Charger les données depuis le stockage persistant
+        async function loadData() {
+            try {
+                const result = await window.storage.get(STORAGE_KEY);
+                if (result && result.value) {
+                    exploratrices = JSON.parse(result.value);
+                    console.log('✅ Données chargées depuis le stockage');
+                } else {
+                    exploratrices = JSON.parse(JSON.stringify(exploratricesDefaut));
+                    console.log('📝 Utilisation des données par défaut');
+                }
+            } catch (error) {
+                console.log('⚠️ Erreur de chargement, utilisation des données par défaut');
+                exploratrices = JSON.parse(JSON.stringify(exploratricesDefaut));
+            }
+            render();
+        }
+
+        // Sauvegarder les données
+        async function saveData() {
+            try {
+                await window.storage.set(STORAGE_KEY, JSON.stringify(exploratrices));
+                console.log('💾 Données sauvegardées');
+            } catch (error) {
+                console.error('❌ Erreur de sauvegarde:', error);
+            }
+        }
+
+        function updateStats() {
+            const reserved = exploratrices.filter(e => e.reserve).length;
+            const available = exploratrices.length - reserved;
+            
+            document.getElementById('total-count').textContent = exploratrices.length;
+            document.getElementById('available-count').textContent = available;
+            document.getElementById('reserved-count').textContent = reserved;
+        }
+
+        function filterExploratrices(filter, element) {
+            currentFilter = filter;
+            
+            // Mettre à jour les boutons de filtre
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            render();
+        }
+
+        function render() {
+            container.innerHTML = "";
+            updateStats();
+            
+            let filteredExploratrices = exploratrices;
+            if (currentFilter === 'available') {
+                filteredExploratrices = exploratrices.filter(e => !e.reserve);
+            } else if (currentFilter === 'reserved') {
+                filteredExploratrices = exploratrices.filter(e => e.reserve);
+            }
+            
+            if (filteredExploratrices.length === 0) {
+                container.innerHTML = '<div class="loading">Aucune exploratrice ne correspond à ce filtre.</div>';
+                return;
+            }
+            
+            filteredExploratrices.forEach(e => {
+                const card = document.createElement('div');
+                card.className = `card ${e.reserve ? 'reserved' : ''}`;
+                
+                let cardContent = `
+                    <div>
+                        <div class="card-header">
+                            <div class="icon">${e.icon || '🌟'}</div>
+                            <h3>${e.nom}</h3>
+                        </div>
+                        <p class="exploit">${e.exploit}</p>
+                    </div>
+                `;
+
+                if (e.reserve) {
+                    cardContent += `<div class="tag-reserve">✓ Explorée par : ${e.eleve}</div>`;
+                } else {
+                    cardContent += `
+                        <div class="input-group">
+                            <input type="text" id="user-${e.id}" placeholder="Votre nom ou binôme" autocomplete="off">
+                            <button onclick="validerChoix(${e.id})">Valider ce projet</button>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = cardContent;
+                container.appendChild(card);
+            });
+        }
+
+        async function validerChoix(id) {
+            const input = document.getElementById(`user-${id}`);
+            const nom = input.value.trim();
+
+            if (nom === "") {
+                alert("⚠️ Indiquez votre nom pour réserver cette exploratrice ! 📝");
+                return;
+            }
+
+            const cible = exploratrices.find(e => e.id === id);
+            cible.reserve = true;
+            cible.eleve = nom;
+
+            await saveData();
+            render();
+            
+            alert(`🎉 Félicitations ! Vous partez à l'aventure avec ${cible.nom}.\n\n✅ Votre réservation est enregistrée.`);
+        }
+
+        function exporterResultats() {
+            const selections = exploratrices.filter(e => e.reserve);
+            
+            if (selections.length === 0) {
+                alert("Aucune réservation n'a encore été effectuée. ✨");
+                return;
+            }
+            
+            let contenu = "Exploratrice;Élève(s)\n";
+            selections.forEach(s => {
+                contenu += `${s.nom};${s.eleve}\n`;
+            });
+            
+            const blob = new Blob([contenu], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const lien = document.createElement("a");
+            
+            const date = new Date().toLocaleDateString('fr-FR').replace(/\//g, '-');
+            lien.setAttribute("href", url);
+            lien.setAttribute("download", `reservations_exploratrices_${date}.csv`);
+            lien.style.visibility = 'hidden';
+            
+            document.body.appendChild(lien);
+            lien.click();
+            document.body.removeChild(lien);
+            
+            alert(`✅ Export réussi !\n\n${selections.length} réservation(s) exportée(s).`);
+        }
+
+        async function resetAllReservations() {
+            if (!confirm("⚠️ Êtes-vous sûr de vouloir réinitialiser toutes les réservations ?\n\nCette action est irréversible !")) {
+                return;
+            }
+            
+            // Réinitialiser les données locales
+            exploratrices = JSON.parse(JSON.stringify(exploratricesDefaut));
+            
+            // Supprimer du stockage persistant
+            try {
+                await window.storage.delete(STORAGE_KEY);
+                console.log('🗑️ Données supprimées du stockage');
+            } catch (error) {
+                // Si la clé n'existe pas, ce n'est pas grave
+                console.log('ℹ️ Aucune donnée à supprimer du stockage');
+            }
+            
+            // Réinitialiser le filtre
+            currentFilter = 'all';
+            
+            // Réactiver le bouton "Toutes"
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.filter-btn')[0].classList.add('active');
+            
+            // Re-rendre l'interface
+            render();
+            
+            alert("✅ Toutes les réservations ont été réinitialisées !");
+        }
+
+        // Charger les données au démarrage
+        loadData();
+    </script>
+</body>
+</html>
